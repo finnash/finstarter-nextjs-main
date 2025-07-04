@@ -35,9 +35,8 @@ export const auth = betterAuth({
 	baseURL: appUrl,
 	trustedOrigins: [
 		appUrl,
-		"https://finstarter-nextjs-main-web.vercel.app", // <-- Add your Vercel deployment URL here!
-		// If you have a custom domain, add it here as well:
-		// "https://your-custom-domain.com",
+		"https://finstarter-nextjs-main-web.vercel.app",
+		// Add more trusted domains if needed
 	],
 	appName: config.appName,
 	database: prismaAdapter(db, {
@@ -120,10 +119,8 @@ export const auth = betterAuth({
 	},
 	emailAndPassword: {
 		enabled: true,
-		// If signup is disabled, the only way to sign up is via an invitation. So in this case we can auto sign in the user, as the email is already verified by the invitation.
-		// If signup is enabled, we can't auto sign in the user, as the email is not verified yet.
-		autoSignIn: !config.auth.enableSignup,
-		requireEmailVerification: config.auth.enableSignup,
+		autoSignIn: true,
+		requireEmailVerification: false,
 		sendResetPassword: async ({ user, url }, request) => {
 			const locale = getLocaleFromRequest(request);
 			await sendEmail({
@@ -138,7 +135,7 @@ export const auth = betterAuth({
 		},
 	},
 	emailVerification: {
-		sendOnSignUp: config.auth.enableSignup,
+		sendOnSignUp: true,
 		sendVerificationEmail: async (
 			{ user: { email, name }, url },
 			request,
@@ -172,7 +169,7 @@ export const auth = betterAuth({
 		admin(),
 		passkey(),
 		magicLink({
-			disableSignUp: true,
+			disableSignUp: false, // <-- EMAIL SIGNUP IS ENABLED NOW
 			sendMagicLink: async ({ email, url }, request) => {
 				const locale = getLocaleFromRequest(request);
 				await sendEmail({
@@ -238,4 +235,4 @@ export type OrganizationMemberRole =
 
 export type OrganizationInvitationStatus = typeof auth.$Infer.Invitation.status;
 
-export type OrganizationMetadata = Record<string, unknown> | undefined; 
+export type OrganizationMetadata = Record<string, unknown> | undefined;
